@@ -9,8 +9,8 @@
 var fs = require('fs');
 var lineReader = require('line-reader');
 var util = require('util');
-//var path='/mnt/farmweblog3/netError/';
-var path='./xxx/';
+var path='/mnt/farmweblog3/netError/';
+//var path='./xxx/';
 var ret={};
 var retArr=[];
 var argumentsArr = process.argv;
