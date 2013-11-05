@@ -10,21 +10,37 @@ var fs = require('fs');
 var lineReader = require('line-reader');
 var util = require('util');
 var zlib = require('zlib');
-var path='/mnt/farmweblog3/netError/';
-//var path='./xxx/';
+var query = require("querystring");
+//var path='/mnt/farmweblog3/netError/';
+var path='./xxx/';
 var ret={};
 var retArr=[];
-var argumentsArr = process.argv;
-console.log(argumentsArr);
-if (argumentsArr.length < 1) {
-    console.log('arguments error!');
-    return;
-}
-var datedir=argumentsArr[2];
+
+var datedir='2013_11_3';
+
 var langdir=[];
 var langindex=0;
+var over=false;
 
-start();
+function exe(req, res, rf, data) {
+   over=false;
+    var qu = query.parse(data);
+    datedir = qu['date'];
+    console.log(qu);
+    var i=20;
+    var ss=setInterval(function(){
+        if(i--<0){
+            res.end('ok');
+            clearInterval(ss);
+            return;
+        }
+        if(over){
+            res.end('ok');
+            clearInterval(ss);
+        }
+    },1000);
+    start();
+}
 //开始执行
 function start() {
     langdir=fs.readdirSync(path+datedir+'/');
@@ -34,6 +50,7 @@ function start() {
 //下一个文件
 function nextfile(){
     if(langindex>=langdir.length){
+        over=true;
         console.log('Over');
         return;
     }
@@ -55,6 +72,7 @@ function openfile(filename) {
                         fs.writeFileSync('./static_file/'+datedir+'_'+langdir[langindex]+'.json',buffer );
                     }
                     langindex++;
+                    wirteConfig();
                     nextfile();
                     cb(false);
                 });
@@ -65,6 +83,12 @@ function openfile(filename) {
     });
 }
 
+function wirteConfig(){
+    var str=fs.readFileSync('./static_file/config.json','utf8');
+    var config=JSON.parse(str);
+    config[datedir]=true;
+    fs.writeFileSync('./static_file/config.json',JSON.stringify(config));
+}
 function exec(strs, cb) {
     try {
         var data = strs.substr(strs.indexOf('{'));
@@ -108,3 +132,5 @@ function pushObj(key){
     }
     ret[key]++;
 }
+
+exports.exe=exe;
