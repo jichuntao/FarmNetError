@@ -9,6 +9,7 @@
 var fs = require('fs');
 var lineReader = require('line-reader');
 var util = require('util');
+var zlib = require('zlib');
 var path='/mnt/farmweblog3/netError/';
 //var path='./xxx/';
 var ret={};
@@ -49,10 +50,14 @@ function openfile(filename) {
                 var obj={};
                 obj.data=retArr;
                 obj.ret=ret;
-                fs.writeFileSync('./static_file/'+datedir+'_'+langdir[langindex]+'.json', JSON.stringify(obj));
-                langindex++;
-                nextfile();
-                cb(false);
+                zlib.deflate(JSON.stringify(obj), function(err, buffer) {
+                    if (!err) {
+                        fs.writeFileSync('./static_file/'+datedir+'_'+langdir[langindex]+'.json',buffer );
+                    }
+                    langindex++;
+                    nextfile();
+                    cb(false);
+                });
                 return;
             }
             cb();
@@ -70,21 +75,21 @@ function exec(strs, cb) {
         var uid = obj.uid;
         var date=new Date(logtime*1000);
         if(obj.errarr.length==0){
-            pushObj('Timeout');
+            pushObj('_0');
             retArr.push({time:logtime,type:0});
         }else{
             if(obj.errarr[0].msg.description=='HTTP: Status 503'){
-                pushObj('503');
+                pushObj('_1');
                 retArr.push({time:logtime,type:1});
             }else if(obj.errarr[0].msg.description=='HTTP: Status 502'){
-                pushObj('502');
+                pushObj('_2');
                 retArr.push({time:logtime,type:2});
             }else if(obj.errarr[0].msg.description=='HTTP: Failed'){
-                pushObj('Failed');
+                pushObj('_3');
                 retArr.push({time:logtime,type:3});
             }else{
                 retArr.push({time:logtime,type:4});
-                pushObj('other');
+                pushObj('_4');
             }
 
         }
