@@ -11,8 +11,8 @@ var lineReader = require('line-reader');
 var util = require('util');
 var zlib = require('zlib');
 var query = require("querystring");
-//var path='/mnt/farmweblog3/netError/';
-var path='./xxx/';
+var path='/mnt/farmweblog3/netError/';
+//var path='./xxx/';
 var ret={};
 var retArr=[];
 
