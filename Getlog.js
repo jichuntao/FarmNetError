@@ -27,7 +27,7 @@ function exe(req, res, rf, data) {
     langdir = qu['lang'];
     ret={};
     retArr=[];
-    var retRetry=[];
+    retRetry={};
     var filename=path+datedir+'/'+langdir+'/'+datedir+'_netError_'+langdir+'.log';
     openfile(filename,function(data){
         res.write(data, "binary");
