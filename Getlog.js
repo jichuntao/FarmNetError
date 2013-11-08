@@ -42,8 +42,8 @@ function openfile(filename,callback) {
                 obj.data=retArr;
                 obj.ret=ret;
                 zlib.deflate(JSON.stringify(obj), function(err, buffer) {
-                     callback(buffer);
-                     cb(false);
+                    callback(buffer);
+                    cb(false);
                 });
                 return;
             }
