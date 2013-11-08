@@ -15,7 +15,7 @@ var path='/mnt/farmweblog3/netError/';
 //var path='./xxx/';
 var ret={};
 var retArr=[];
-var retRetry=[];
+var retRetry={};
 
 var datedir='2013_11_3';
 var langdir='am';
@@ -42,14 +42,14 @@ function openfile(filename,callback) {
             if (last) {
                 var obj={};
                 obj.data=retArr;
-                obj.ret=ret;
-                obj.retry=retRetry;
-                zlib.deflate(JSON.stringify(obj), function(err, buffer) {
-                    callback(buffer);
-                    cb(false);
-                });
-                return;
-            }
+            obj.ret=ret;
+            obj.retry=retRetry;
+            zlib.deflate(JSON.stringify(obj), function(err, buffer) {
+                callback(buffer);
+                cb(false);
+            });
+            return;
+        }
             cb();
         });
     });
@@ -91,7 +91,6 @@ function exec(strs, cb) {
                 pushObj('_4');
             }
         }
-
         cb();
     }
     catch (e){
