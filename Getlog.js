@@ -43,6 +43,7 @@ function openfile(filename,callback) {
                 var obj={};
                 obj.data=retArr;
                 obj.ret=ret;
+                obj.retry=retRetry;
                 zlib.deflate(JSON.stringify(obj), function(err, buffer) {
                     callback(buffer);
                     cb(false);
@@ -69,18 +70,23 @@ function exec(strs, cb) {
         }
         if(obj.errarr.length==0){
             pushObj('_0');
+            pushObj_retry('_0',retryStates);
             retArr.push({time:logtime,type:0,retryStates:retryStates});
         }else{
             if(obj.errarr[0].msg.description=='HTTP: Status 503'){
                 pushObj('_1');
+                pushObj_retry('_1',retryStates);
                 retArr.push({time:logtime,type:1,retryStates:retryStates});
             }else if(obj.errarr[0].msg.description=='HTTP: Status 502'){
                 pushObj('_2');
+                pushObj_retry('_2',retryStates);
                 retArr.push({time:logtime,type:2,retryStates:retryStates});
             }else if(obj.errarr[0].msg.description=='HTTP: Failed'){
                 pushObj('_3');
+                pushObj_retry('_3',retryStates);
                 retArr.push({time:logtime,type:3,retryStates:retryStates});
             }else{
+                pushObj_retry('_4',retryStates);
                 retArr.push({time:logtime,type:4,retryStates:retryStates});
                 pushObj('_4');
             }
@@ -94,11 +100,19 @@ function exec(strs, cb) {
     }
 }
 
-function pushObj(key){
-    if(!ret[key]){
-        ret[key]=0;
-    }
-    ret[key]++;
+    function pushObj(key){
+        if(!ret[key]){
+            ret[key]=0;
+        }
+        ret[key]++;
 }
-
+function pushObj_retry(key,retryStates){
+    if(!retryStates){
+        return;
+    }
+    if(!retRetry[key]){
+        retRetry[key]=0;
+    }
+    retRetry[key]++;
+}
 exports.exe=exe;
