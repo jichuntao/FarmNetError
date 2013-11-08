@@ -16,36 +16,35 @@ var path='/mnt/farmweblog3/netError/';
 var ret={};
 var retArr=[];
 
-var datedir='2013_11_6';
+var datedir='2013_11_3';
 var langdir='am';
 
 
-
-start();
-
-
-//开始执行
-function start() {
+function exe(req, res, rf, data) {
+    var qu = query.parse(data);
+    datedir = qu['date'];
+    langdir = qu['lang'];
     ret={};
     retArr=[];
-    openfile(path+datedir+'/'+langdir+'/'+datedir+'_netError_'+langdir+'.log');
+    var filename=path+datedir+'/'+langdir+'/'+datedir+'_netError_'+langdir+'.log';
+    openfile(filename,function(data){
+        res.write(data, "binary");
+        res.end();
+    });
 }
 
 //开始打开文件
-function openfile(filename) {
+function openfile(filename,callback) {
     lineReader.eachLine(filename, function (line, last, cb) {
         exec(line, function () {
             if (last) {
                 var obj={};
                 obj.data=retArr;
                 obj.ret=ret;
-//                zlib.deflate(JSON.stringify(obj), function(err, buffer) {
-//                    if (!err) {
-//                        fs.writeFileSync('./static_file/'+datedir+'_'+langdir[langindex]+'.json',buffer );
-//                    }
-                    cb(false);
-//                });
-                console.log('ok');
+                zlib.deflate(JSON.stringify(obj), function(err, buffer) {
+                     callback(buffer);
+                     cb(false);
+                });
                 return;
             }
             cb();
@@ -97,3 +96,4 @@ function pushObj(key){
     ret[key]++;
 }
 
+exports.exe=exe;
